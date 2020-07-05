@@ -1,6 +1,6 @@
 ---
 layout: slide
-title: "Welcome to our second slide!"
+title: "Welcome to my second slide!"
 ---
 "I am a part of all that I have met" - Alfred Tennyson
 
