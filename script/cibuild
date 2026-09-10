@@ -1,6 +1,10 @@
 #!/bin/sh
-
-set -e
-
-bundle exec jekyll build --baseurl "."
-htmlproofer _site/index.html --empty-alt-ignore
+set -eu
+cd "$(dirname "$0")/.."
+npm run check:assets
+# Check both user/organization Pages and repository Pages asset paths.
+bundle exec jekyll build --baseurl ""
+node script/check-site.cjs _site ""
+bundle exec jekyll build --baseurl "/myfirstslideshow"
+node script/check-site.cjs _site "/myfirstslideshow"
+bundle exec htmlproofer _site --disable-external --empty-alt-ignore --url-swap '^/myfirstslideshow/:/'

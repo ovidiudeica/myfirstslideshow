@@ -1,16 +1,12 @@
-<script src="{{ site.baseurl }}/node_modules/reveal.js/js/reveal.js"></script>
-
-		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				hash: true,
-				dependencies: [
-					{ src: 'node_modules/reveal.js/plugin/markdown/marked.js' },
-					{ src: 'node_modules/reveal.js/plugin/markdown/markdown.js' },
-					{ src: 'node_modules/reveal.js/plugin/highlight/highlight.js' },
-					{ src: 'node_modules/reveal.js/plugin/notes/notes.js', async: true }
-				]
-			});
-		</script>
+<script src="{{ '/assets/reveal/dist/reveal.js' | relative_url }}"></script>
+<script src="{{ '/assets/reveal/dist/plugin/markdown.js' | relative_url }}"></script>
+<script src="{{ '/assets/reveal/dist/plugin/highlight.js' | relative_url }}"></script>
+<script src="{{ '/assets/reveal/dist/plugin/notes.js' | relative_url }}"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    // Keep the original slide navigation on mobile as well as desktop.
+    scrollActivationWidth: null,
+    plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+  });
+</script>
