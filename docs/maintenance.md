@@ -45,6 +45,10 @@ updates npm, Bundler and Actions weekly. Its reveal.js PRs must also refresh the
 vendored assets; CI deliberately rejects stale copies. Review any changed upstream
 asset layout before changing the explicit copy list.
 
+The vendored files bypass Git line-ending conversion so the byte comparison also
+works on Windows. The existing HTMLProofer dependency is retained; its Yell logging
+dependency was patched from 2.2.0 to 2.2.2 for Ruby 3.4 compatibility.
+
 ## Security cleanup
 
 The original site served reveal.js 3.9.2 and all its demos/plugins from node_modules,

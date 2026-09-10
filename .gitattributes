@@ -1,0 +1,2 @@
+# Preserve upstream bytes so check:assets also works with Windows checkouts.
+assets/reveal/** -text
