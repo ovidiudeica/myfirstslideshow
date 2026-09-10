@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Slideshow favicon">
+  <rect width="64" height="64" rx="12" fill="#002b36"/>
+  <rect x="10" y="13" width="44" height="32" rx="3" fill="none" stroke="#b58900" stroke-width="4"/>
+  <path d="M18 23h28M18 31h20" stroke="#eee8d5" stroke-width="4" stroke-linecap="round"/>
+  <path d="M27 51h10M32 45v6" stroke="#b58900" stroke-width="4" stroke-linecap="round"/>
+</svg>
