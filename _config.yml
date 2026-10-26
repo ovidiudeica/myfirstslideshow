@@ -2,6 +2,8 @@ timezone:    Europe/Berlin
 future:      false
 # Set baseurl to the base path of the site eg "/mytalk"
 # baseurl:     "/github-slideshow"
+url:         "https://ovidiudeica.github.io"
+baseurl:     "/myfirstslideshow"
 # The allowed values are 'rouge', 'pygments' or null.
 highlighter: rouge
 # markdown - Valid options are [ maruku | rdiscount | kramdown | redcarpet ]
@@ -17,9 +19,9 @@ plugins:
   - jemoji
 
 ## personalize your slide show
-title:       github-slideshow
+title:       My First Slideshow
 author:      GitHubTeacher
-description: A fun activity for learning Git and GitHub.
+description: An interactive slideshow built with Jekyll and reveal.js, hosted on GitHub Pages.
 
 sass:
   style:     :compressed
