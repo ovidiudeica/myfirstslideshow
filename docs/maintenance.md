@@ -151,3 +151,20 @@ used Ruby 3.4, Node.js 24 and Bundler 4.0.20. Both the baseline and candidate pa
 These checks do not constitute a scan of every Ruby advisory, Git history, or
 GitHub's managed build environment. Native mobile pinch-zoom behavior should also
 be checked on a physical device when available.
+
+### Additional maintenance
+
+The viewport now retains `width=device-width, initial-scale=1.0` and permits browser
+zoom by removing `maximum-scale=1.0, user-scalable=no`. No presentation dimensions,
+navigation code, theme styles or social metadata were changed.
+
+All Actions in the validation workflow now use verified immutable commit SHAs.
+The three previous v7 references resolve to the same versions; ruby/setup-ruby was
+already pinned. Dependabot's weekly Actions updates remain enabled. An explicit
+`bundle check` follows dependency installation; existing triggers, required job
+name, timeout and read-only permissions are retained.
+
+Git's executable bit was cleared on README.md, LICENSE, _config.yml and index.html:
+they are documentation, license, YAML and HTML files, not executable programs.
+Their contents were not changed. Shell scripts keep their executable bits. README
+already preserved the July 2020 Learning Lab attribution and needed no text edits.
