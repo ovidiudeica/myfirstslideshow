@@ -21,7 +21,7 @@ plugins:
 ## personalize your slide show
 title:       My First Slideshow
 author:      GitHubTeacher
-description: An interactive slideshow built with Jekyll and reveal.js, hosted on GitHub Pages.
+description: My First Slideshow is an interactive presentation built with Jekyll and reveal.js, hosted on GitHub Pages. Navigate the slides using your arrow keys.
 
 sass:
   style:     :compressed
