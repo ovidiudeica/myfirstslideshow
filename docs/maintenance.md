@@ -73,4 +73,81 @@ The initial committed-file signature scan found no obvious credentials. This was
 not an exhaustive history scan. The obsolete `script/stage` tool, which targeted an
 old training server and used a force push, and the empty `.gitmodules` file have
 been removed. Local setup no longer attempts to initialize submodules.
-Repository protection and security-scanning settings need separate owner review.
+On 27 October 2026, the branch API confirmed that master is protected and requires
+`Build and validate slideshow` for everyone. The integration could not read the full
+protection settings (HTTP 403), so review counts, administrator bypass and other
+protection options were not independently verified. No protection setting was changed.
+
+## Ruby dependency security review — 27 October 2026
+
+The reviewed baseline is master commit `691103f66eb612b290b40a1f357abf820bca091f`.
+Its validation and managed Pages deployment passed; the public slideshow returned
+HTTP 200. The Pages logs show master as the source and the root as the build source.
+
+### Root cause and remediation
+
+[GHSA-47m2-wp7j-p9vc / CVE-2026-85396](https://github.com/advisories/GHSA-47m2-wp7j-p9vc)
+affects rubyzip before 3.4.0. It concerns path traversal during ZIP entry extraction
+into sibling paths sharing the destination prefix. The
+[upstream 3.4.0 release](https://github.com/rubyzip/rubyzip/releases/tag/v3.4.0)
+also warns of breaking changes in the 3.x series.
+
+Bundler confirmed the original chain:
+`github-pages 232 -> jekyll-remote-theme 0.4.3 -> rubyzip >= 1.3.0, < 3.0`,
+resolved to rubyzip 2.4.1. The patched version cannot satisfy that constraint.
+Forcing rubyzip 3.4.0 into this chain would be incompatible.
+
+This slideshow has local templates and vendored Moon/reveal.js assets, no
+`remote_theme` configuration, and no ZIP extraction code. Its only configured
+plugin is jemoji. The umbrella github-pages bundle is unnecessary for local/CI
+builds. Gemfile now declares the existing Jekyll 3.10.0, jemoji 0.13.0 and
+kramdown-parser-gfm 1.1.0 directly. Bundler regenerated Gemfile.lock, removing the
+unused umbrella dependencies including jekyll-remote-theme and rubyzip. Retained
+gem versions were not upgraded. HTMLProofer is constrained to `~> 5.2.3`
+(5.2.x, at least 5.2.3), matching the CLI flags validated by script/cibuild.
+
+### Exposure and remaining boundary
+
+The flaw requires processing a crafted ZIP archive; installing rubyzip alone does
+not establish exploitation. The original configuration does not activate remote
+theme downloads. The
+[remote-theme downloader](https://github.com/benbalter/jekyll-remote-theme/blob/v0.4.3/lib/jekyll-remote-theme/downloader.rb)
+does extract archives when remote themes are used, so future remote-theme changes
+must not reintroduce this vulnerable dependency chain. Local workstations and CI
+could otherwise expose writable build files to malicious archive contents. CI
+already uses ephemeral hosted runners, a read-only contents token, no persisted
+checkout credentials, and no deployment credentials in the validation workflow.
+The published static site does not execute Ruby or extract ZIP archives.
+
+Branch-based GitHub Pages uses GitHub's managed build image and its own gem bundle;
+[its entrypoint](https://github.com/actions/jekyll-build-pages/blob/44a6e6beabd48582f863aeeb6cb2151cc1716697/entrypoint.sh)
+checks the source Gemfile but builds from the image's bundle. Removing rubyzip
+from this repository therefore fixes the local/CI dependency graph; it does not
+patch or attest to the managed image's transitive dependencies. The baseline image
+used github-pages 232. No remote theme is configured, and the public URL and Pages
+deployment settings remain unchanged. Track upstream Pages/remote-theme updates.
+A custom deployment migration would require separate validation and is outside
+this minimal maintenance change. No security alert has been dismissed, suppressed
+or ignored; alert closure must be checked after merge.
+
+### Validation evidence
+
+The [isolated Linux validation run](https://github.com/ovidiudeica/myfirstslideshow/actions/runs/40599729875)
+used Ruby 3.4, Node.js 24 and Bundler 4.0.20. Both the baseline and candidate passed:
+
+- `npm ci --ignore-scripts`, `npm run check:assets`, `npm audit --omit=dev`
+  (zero npm vulnerabilities reported).
+- `bundle install`, `bundle check`, and `sh script/cibuild`.
+- Jekyll builds at both `""` and `"/myfirstslideshow"`, asset checks for two slides
+  and 19 local references, and HTMLProofer 5.2.3.
+- Bundler inspection confirmed the vulnerable chain before remediation and the
+  absence of github-pages, jekyll-remote-theme and rubyzip afterwards.
+- Both original Markdown posts, the PDF, reveal.js assets and initializer,
+  layouts, npm manifests and baseurl configuration remained unchanged.
+- Generated slide pages and the public index matched byte-for-byte after
+  normalizing only the viewport zoom restriction; generated file inventories and
+  all shared static file bytes were identical.
+
+These checks do not constitute a scan of every Ruby advisory, Git history, or
+GitHub's managed build environment. Native mobile pinch-zoom behavior should also
+be checked on a physical device when available.
