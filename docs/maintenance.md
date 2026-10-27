@@ -5,14 +5,23 @@ change is needed. The two Markdown posts, Moon theme and hash navigation are ret
 The reveal settings in _config.yml were already unused by the original initializer;
 this cleanup does not activate them or change the existing presentation geometry.
 
+## Public website and social preview
+
+The site is published from the root of `master` at
+https://ovidiudeica.github.io/myfirstslideshow/. The LinkedIn/Open Graph
+image is `assets/images/og-preview.jpg`, referenced by
+`_includes/head.html` with a cache-busting query parameter. The previous
+`og-preview.png` image is no longer used and was removed.
+
+Social metadata is independent of the slide contents. Do not change the
+Markdown slides merely to alter the link preview.
+
 ## Local setup and checks
 
 Use Node.js 24 and Ruby 3.4 (the existing Gemfile.lock requires a modern Ruby).
 
 ```sh
-npm ci --ignore-scripts
-npm run check:assets
-bundle install
+sh script/setup
 sh script/cibuild
 bundle exec jekyll serve --baseurl /myfirstslideshow
 ```
@@ -61,6 +70,7 @@ References: [upstream migration guide](https://revealjs.com/upgrading/),
 [upstream releases and security fixes](https://github.com/hakimel/reveal.js/releases).
 
 The initial committed-file signature scan found no obvious credentials. This was
-not an exhaustive history scan. Legacy script/stage targets an old training server
-and force-pushes a generated site; it is not part of this build and should not be run.
+not an exhaustive history scan. The obsolete `script/stage` tool, which targeted an
+old training server and used a force push, and the empty `.gitmodules` file have
+been removed. Local setup no longer attempts to initialize submodules.
 Repository protection and security-scanning settings need separate owner review.
