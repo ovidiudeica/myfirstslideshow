@@ -7,4 +7,4 @@ bundle exec jekyll build --baseurl ""
 node script/check-site.cjs _site ""
 bundle exec jekyll build --baseurl "/myfirstslideshow"
 node script/check-site.cjs _site "/myfirstslideshow"
-bundle exec htmlproofer _site --disable-external --empty-alt-ignore --url-swap '^/myfirstslideshow/:/'
+bundle exec htmlproofer --disable-external --ignore-empty-alt --swap-urls '^/myfirstslideshow/:/' _site
