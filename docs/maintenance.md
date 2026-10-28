@@ -1,20 +1,48 @@
 # Slideshow maintenance
 
-GitHub Pages builds this Jekyll site from the root of master. No deployment setting
-change is needed. The two Markdown posts, Moon theme and hash navigation are retained.
+GitHub Pages now publishes this Jekyll site using a protected, manual GitHub
+Actions workflow rather than the provider-managed Jekyll container. The two
+Markdown posts, Moon theme and hash navigation are retained.
 The reveal settings in _config.yml were already unused by the original initializer;
 this cleanup does not activate them or change the existing presentation geometry.
 
 ## Public website and social preview
 
-The site is published from the root of `master` at
-https://ovidiudeica.github.io/myfirstslideshow/. The LinkedIn/Open Graph
+The site is built from the protected `master` branch and published via
+GitHub Actions at https://ovidiudeica.github.io/myfirstslideshow/. The LinkedIn/Open Graph
 image is `assets/images/og-preview.jpg`, referenced by
 `_includes/head.html` with a cache-busting query parameter. The previous
 `og-preview.png` image is no longer used and was removed.
 
 Social metadata is independent of the slide contents. Do not change the
 Markdown slides merely to alter the link preview.
+
+
+## Publishing through GitHub Actions (since 28 October 2026)
+
+This site uses **Settings → Pages → Source: GitHub Actions**, not branch-based Pages Jekyll builds.
+The `github-pages` environment permits deployments only from the protected `master`
+branch; administrative bypass of environment protection was disabled during the cutover.
+Deployment is **manual only**, never automatic on `push` or pull requests.
+
+1. Open [Container-free Pages workflow](https://github.com/ovidiudeica/myfirstslideshow/actions/workflows/pages-migration-preview.yml).
+2. Choose **Run workflow**, select `master`, enable
+   **Confirm Settings > Pages > Source is GitHub Actions**, then run **once**.
+3. Check that both the `preview` (Jekyll build and vulnerability audit) and
+   `deploy` jobs complete successfully. Do not mistake green Dependabot PR
+   previews for production deployments.
+4. Check the live site, canonical and Open Graph metadata, original content and assets.
+   The branch's required CI must pass before deployment. The deployment job uses
+   `actions/deploy-pages`; the build uses the committed `Gemfile.lock`, not
+   GitHub's managed `jekyll-build-pages` container.
+
+**Emergency rollback:** stop manual deployment; if publication is broken, switch
+**Settings → Pages → Build and deployment → Source** back to
+**Deploy from a branch → master → /(root)**. This restores the old path but
+**reintroduces the provider-managed Jekyll image risk**: re-open
+[the tracked security issue](https://github.com/ovidiudeica/myfirstslideshow/issues/32)
+and reinstate the Actions workflow once repaired. Rollback never requires
+force-pushing or disabling branch protection.
 
 ## Local setup and checks
 
@@ -36,7 +64,7 @@ It uploads a review artifact and never deploys or publishes a gem.
 npm is used to lock and verify the upstream browser distribution, not to build Jekyll.
 Only the nine required upstream files are committed under assets/reveal, including
 the MIT license; node_modules is ignored and excluded from Pages. This preserves
-branch-based Pages, which does not run npm. The League Gothic font is embedded in
+the Actions-based Pages build, which runs npm asset verification. The League Gothic font is embedded in
 the new Moon CSS. Lato still uses the existing Google Fonts service.
 
 After reviewing upstream compatibility/security notes:
@@ -76,8 +104,9 @@ been removed. Local setup no longer attempts to initialize submodules.
 On 27 October 2026, the branch API confirmed that master is protected and requires
 `Build and validate slideshow` for everyone. The authenticated GitHub CLI also confirmed strict status checks, administrator
 enforcement, zero required approving reviews, and disabled force pushes and branch
-deletions. Pages uses legacy branch publishing from master at /, with HTTPS enforced.
-No protection or deployment setting was changed.
+deletions. At the time of that review, Pages used legacy branch publishing
+from master at /, with HTTPS enforced. This was superseded by the controlled
+GitHub Actions cutover on 28 October 2026.
 
 ## Ruby dependency security review — 27 October 2026
 
@@ -126,11 +155,12 @@ checks the source Gemfile but builds from the image's bundle. Removing rubyzip
 from this repository therefore fixes the local/CI dependency graph; it does not
 patch or attest to the managed image's transitive dependencies. The baseline and candidate managed build image used github-pages 232; direct
 inspection of ghcr.io/actions/jekyll-build-pages:v1.0.13 also confirmed
-jekyll-remote-theme 0.4.3 and affected rubyzip 2.3.2 in that provider-owned image. No remote theme is configured, and the public URL and Pages
-deployment settings remain unchanged. Track upstream Pages/remote-theme updates.
-A custom deployment migration would require separate validation and is outside
-this minimal maintenance change. No security alert has been dismissed, suppressed
-or ignored; alert closure must be checked after merge.
+jekyll-remote-theme 0.4.3 and affected rubyzip 2.3.2 in that provider-owned image.
+No remote theme is configured. This paragraph documents the **historical**
+pre-migration risk: since 28 October 2026, production builds use the audited
+GitHub Actions path instead. The remediation evidence is in
+[issue #32](https://github.com/ovidiudeica/myfirstslideshow/issues/32), closed
+after all three live sites had successful manual deployments.
 
 ### Validation evidence
 
