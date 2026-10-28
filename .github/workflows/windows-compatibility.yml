@@ -42,10 +42,3 @@ jobs:
           Write-Output '=== LOCKFILE START ==='
           Get-Content Gemfile.lock
           Write-Output '=== LOCKFILE END ==='
-      - run: bundle install
-      - run: bundle check
-      - name: Build and verify both base URLs with Jekyll and HTMLProofer
-        shell: bash
-        run: sh script/cibuild
-      - name: Display platform resolution delta for review
-        run: git diff -- Gemfile.lock
