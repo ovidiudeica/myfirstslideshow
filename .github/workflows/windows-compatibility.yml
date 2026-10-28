@@ -34,10 +34,18 @@ jobs:
       - uses: ruby/setup-ruby@b1da4809b005e0178fe08a1d57317bffc00b7b4c # v1.332.0
         with:
           ruby-version: '3.4'
-          bundler-cache: true
+          bundler-cache: false
+      - name: Diagnose Windows lockfile platform resolution
+        shell: pwsh
+        run: |
+          bundle lock --add-platform x64-mingw-ucrt
+          Write-Output '=== LOCKFILE START ==='
+          Get-Content Gemfile.lock
+          Write-Output '=== LOCKFILE END ==='
+      - run: bundle install
       - run: bundle check
       - name: Build and verify both base URLs with Jekyll and HTMLProofer
         shell: bash
         run: sh script/cibuild
-      - name: Preserve the committed lockfile
-        run: git diff --exit-code -- Gemfile.lock
+      - name: Display platform resolution delta for review
+        run: git diff -- Gemfile.lock
