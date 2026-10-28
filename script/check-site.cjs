@@ -28,6 +28,7 @@ for (const file of files(root)) {
   assert.ok(!text.includes('node_modules/'), file + ': installed packages must not be public assets');
   if (file.endsWith('.html')) {
     assert.ok(!text.includes('{%') && !text.includes('{{'), file + ': unrendered Liquid');
+    assert.match(text, /<html\b[^>]*\blang="en"/i, file + ': HTML root must declare lang="en"');
     for (const match of text.matchAll(/<(?:script|link|img)\b[^>]*?\b(?:src|href)=["']([^"']+)["']/gi)) check(match[1], file);
   } else {
     for (const match of text.matchAll(/url\(\s*["']?([^"'\s)]+)["']?\s*\)/gi)) check(match[1], file);
