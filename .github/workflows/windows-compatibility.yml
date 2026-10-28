@@ -40,11 +40,11 @@ jobs:
         shell: pwsh
         run: |
           # Use Windows-native argument passing; Git Bash rewrites URL base paths.
-          bundle exec jekyll build --baseurl ""
+          bundle exec jekyll build --baseurl=
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node script/check-site.cjs _site ""
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          bundle exec jekyll build --baseurl "/myfirstslideshow"
+          bundle exec jekyll build --baseurl=/myfirstslideshow
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node script/check-site.cjs _site "/myfirstslideshow"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
