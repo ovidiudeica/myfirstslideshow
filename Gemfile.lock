@@ -42,6 +42,7 @@ GEM
       logger
     eventmachine (1.2.7)
     ffi (1.17.4)
+    ffi (1.17.4-x64-mingw-ucrt)
     fiber-annotation (0.2.0)
     fiber-local (1.1.0)
       fiber-storage
@@ -108,6 +109,8 @@ GEM
     nokogiri (1.19.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    nokogiri (1.19.4-x64-mingw-ucrt)
+      racc (~> 1.4)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
     pdf-reader (2.16.0)
@@ -136,6 +139,8 @@ GEM
       ethon (>= 0.18.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2026.5)
+      tzinfo (>= 1.0.0)
     uri (1.1.1)
     webrick (1.9.2)
     yell (2.2.2)
@@ -143,6 +148,7 @@ GEM
 
 PLATFORMS
   ruby
+  x64-mingw-ucrt
 
 DEPENDENCIES
   html-proofer (~> 5.2.3)
