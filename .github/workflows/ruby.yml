@@ -30,6 +30,10 @@ jobs:
           ruby-version: '3.4'
           bundler-cache: true
       - run: bundle check
+      - name: Audit locked Ruby dependencies against current advisories
+        run: |
+          gem install bundler-audit --version 0.9.3 --no-document
+          bundle-audit check --update
       - run: sh script/cibuild
       - name: Save built site for review
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
