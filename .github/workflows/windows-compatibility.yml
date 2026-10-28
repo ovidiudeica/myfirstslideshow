@@ -38,7 +38,7 @@ jobs:
       - name: Diagnose Windows lockfile platform resolution
         shell: pwsh
         run: |
-          bundle lock --add-platform x64-mingw-ucrt
+          bundle lock --add-platform ruby x64-mingw-ucrt
           Write-Output '=== LOCKFILE START ==='
           Get-Content Gemfile.lock
           Write-Output '=== LOCKFILE END ==='
