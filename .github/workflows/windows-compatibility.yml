@@ -36,6 +36,11 @@ jobs:
           ruby-version: '3.4'
           bundler-cache: true
       - run: bundle check
+      - name: Provide native libcurl for Windows HTMLProofer (FFI)
+        shell: pwsh
+        run: |
+          & "$env:RI_DEVKIT\usr\bin\pacman.exe" -Sy --noconfirm --needed mingw-w64-ucrt-x86_64-curl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and verify both base URLs with Jekyll and HTMLProofer
         shell: pwsh
         run: |
