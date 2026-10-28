@@ -41,6 +41,10 @@ jobs:
         run: |
           & "$env:RI_DEVKIT\usr\bin\pacman.exe" -Sy --noconfirm --needed mingw-w64-ucrt-x86_64-curl
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Ethon/FFI looks for libcurl.dll; MSYS2 packages it as libcurl-4.dll.
+          Copy-Item "$env:RI_DEVKIT\ucrt64\bin\libcurl-4.dll" "$env:RI_DEVKIT\ucrt64\bin\libcurl.dll" -Force
+          bundle exec ruby -e "require 'ethon'; puts 'Ethon/libcurl loaded'"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and verify both base URLs with Jekyll and HTMLProofer
         shell: pwsh
         run: |
