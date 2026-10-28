@@ -1,0 +1,43 @@
+name: Windows compatibility smoke
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - Gemfile
+      - Gemfile.lock
+      - package.json
+      - package-lock.json
+      - script/**
+      - assets/reveal/**
+      - .github/workflows/windows-compatibility.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Build and validate slideshow on Windows
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check:assets
+      - uses: ruby/setup-ruby@b1da4809b005e0178fe08a1d57317bffc00b7b4c # v1.332.0
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      - run: bundle check
+      - name: Build and verify both base URLs with Jekyll and HTMLProofer
+        shell: bash
+        run: sh script/cibuild
+      - name: Preserve the committed lockfile
+        run: git diff --exit-code -- Gemfile.lock
