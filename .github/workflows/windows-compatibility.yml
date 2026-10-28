@@ -37,10 +37,18 @@ jobs:
           bundler-cache: true
       - run: bundle check
       - name: Build and verify both base URLs with Jekyll and HTMLProofer
-        shell: bash
-        env:
-          MSYS_NO_PATHCONV: '1'
-          MSYS2_ARG_CONV_EXCL: '*'
-        run: sh script/cibuild
+        shell: pwsh
+        run: |
+          # Use Windows-native argument passing; Git Bash rewrites URL base paths.
+          bundle exec jekyll build --baseurl ""
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node script/check-site.cjs _site ""
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          bundle exec jekyll build --baseurl "/myfirstslideshow"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node script/check-site.cjs _site "/myfirstslideshow"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          bundle exec htmlproofer --disable-external --ignore-empty-alt --swap-urls '^/myfirstslideshow/:/' _site
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve the committed lockfile
         run: git diff --exit-code -- Gemfile.lock
