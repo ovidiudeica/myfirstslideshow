@@ -1,0 +1,56 @@
+name: GitHub Pages migration rehearsal
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    name: Build Pages artifact without managed Jekyll image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check:assets
+      - uses: ruby/setup-ruby@b1da4809b005e0178fe08a1d57317bffc00b7b4c # v1.332.0
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      - name: Reject vulnerable or unnecessary ZIP dependency chain
+        run: |
+          bundle exec ruby -rbundler -e 'bad = Bundler.load.specs.map(&:name) & %w[github-pages jekyll-remote-theme rubyzip]; abort "Unexpected gems: #{bad.join(", ")}" unless bad.empty?'
+      - name: Build candidate with locked local gems
+        env:
+          JEKYLL_ENV: production
+        run: |
+          bundle exec jekyll build --baseurl /myfirstslideshow
+          node script/check-site.cjs _site /myfirstslideshow
+          bundle exec htmlproofer --disable-external --ignore-empty-alt --swap-urls '^/myfirstslideshow/:/' _site
+      - name: Check static output and prevent accidental publish of tools
+        run: |
+          test -s _site/index.html
+          test -s _site/assets/reveal/dist/reveal.js
+          test -s _site/assets/images/og-preview.jpg
+          test -s _site/introduction-to-github.pdf
+          test ! -e _site/Gemfile.lock
+          test ! -e _site/package.json
+          test ! -e _site/script
+          test ! -e _site/docs
+          grep -Fq 'My First Slideshow' _site/index.html
+          grep -Fq 'https://ovidiudeica.github.io/myfirstslideshow/' _site/index.html
+      - name: Upload Pages-compatible candidate (never deploy from PR)
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: _site
+          retention-days: 7
