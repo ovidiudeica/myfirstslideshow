@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
-# Only the engines and plugin used by this slideshow; keep Pages-compatible versions.
-gem 'jekyll', '= 3.10.0'
+# Only the explicitly required engine and plugins; production uses locked GitHub Actions builds.
+gem 'jekyll', '= 4.4.1'
 gem 'jemoji', '= 0.13.0'
 gem 'kramdown-parser-gfm', '= 1.1.0'
 # script/cibuild uses the HTMLProofer 5.2 CLI.
